@@ -56,24 +56,6 @@ int global_alarm_set,     //0 or 1 - relay - on/off
 #define _EEPROM_TEMP_CAL (4*RANGE)
 #define _EEPROM_GLOBAL_START (5*RANGE)
 
-//template <typename T> unsigned int EEPROM_writeAnything (int ee, const T& value)
-//{
-//    const byte* p = (const byte*)&value;
-//    unsigned int i;
-//    for (i = 0; i < sizeof(value); i++)
-//        EEPROM.write(ee++, *p++);
-//    return i;
-//}
-//
-//template <typename T> unsigned int EEPROM_readAnything (int ee, T& value)
-//{
-//    byte* p = (byte*)&value;
-//    unsigned int i;
-//    for (i = 0; i < sizeof(value); i++)
-//        *p++ = EEPROM.read(ee++);
-//    return i;
-//}
-
 void saveAlarmTemperature(int temperature, int port){
   if(temperature > 255){
     EEPROM.write(_EEPROM_START-8 + _EEPROM_AT_START + port, 255);
@@ -154,9 +136,8 @@ void saveGlobal(int unit, int sound, int alarm, int color, int back, int bright,
 
 void _eepromReset(){
   for(int port=0;port<SENSORS_NUMBER;port++){
-    savePort(port, TEMP_MAX, 1, 1, 1);
+    savePort(port, TEMP_MAX-50, 1, 1, 1);
     saveTempCali(port, 50);
   }
   saveGlobal(0,0,0,1,0,3,0);
 }
-

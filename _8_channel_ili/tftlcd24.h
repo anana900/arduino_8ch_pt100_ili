@@ -52,7 +52,12 @@ void printButton(int x, int y, int width, int height, uint16_t buttonColor, Stri
    tft.print(text);
 }
 
-void drawTempSlide(int temp_alarm, int Sy){
+void drawTempSlide(int Sy){
+  if(Sy <= 48) {
+    Sy = 48;
+  } else if (Sy >= 252){
+    Sy = 252;
+  }
         tft.fillRect(21, 40, 18, (Sy-8)-40, BACKGROUND_COLOR);  //clean whole slide space + borders
         tft.fillRect(21, (Sy-8), 18, 16, ILI9341_RED);  //draw cursor
         tft.fillRect(21, (Sy+8), 18, 260-(Sy+8), BACKGROUND_COLOR); //clean rectangle above cursor starting from current position + half size of cursor
@@ -109,12 +114,9 @@ void displayTemperature(int i, int y){
         B_color = 0;
         R_color = 255;
       } else {
-      //  G_color = 0;//255;
         G_color = map(temp[0][i], TEMP_MIN+10, 50, 255, 200);
         B_color = map(temp[0][i], TEMP_MIN+10, 50, BACKGROUND_COLOR, TEXT_COLOR_W);
-       //B_color = map(temp[0][i], TEMP_MIN, 50, 200, 255);
        R_color = map(temp[0][i], TEMP_MIN+10, 50, 255, 200);
-       Serial.println(R_color);
       }
       prepareText(TEMPERATURE_X_POSITION, y+22, 2,  convertRGB( R_color, G_color, B_color), true);
       tft.print(convertTempUnit(temp[0][i]));
@@ -125,45 +127,6 @@ void displayTemperature(int i, int y){
   }
 }
 
-//void printHello(unsigned long delay_ms = 5000){
-//  TS_Point action;
-//  tft.fillScreen(ILI9341_CYAN);
-//  prepareText(60, 50, 2, TEXT_COLOR_B, true);
-//  tft.println("Monitor");
-//  prepareText(15, 90, 2, TEXT_COLOR_B, true);
-//  tft.println("Temperatury");
-//  tft.setCursor(40, 150);
-//  tft.println("8 kanalow");
-//  prepareText(40, 190, 1, TEXT_COLOR_B, true);
-//  tft.println("Zakres pomiarowy:");
-//  prepareText(30, 230, 2, TEXT_COLOR_B, true);
-//  tft.print(TEMP_MIN);
-//  tft.print(" do ");
-//  tft.print(TEMP_MAX);
-//  tft.println(" C");
-//  prepareText(30, 260, 2, ILI9341_RED);
-//  tft.println("www.pomiary.com");
-//  if(delay_ms == 0){
-//    while(true){
-//      if (ts.touched()) {
-//        action = getPoint24();
-//        if (action.y > 0){
-//          soundClic();
-//          printMainMenu();
-//          break;
-//        }
-//        delay(SHORT_CLICK_DELAY);
-//      }
-//    }    
-//  } else {
-//  delay(delay_ms);
-//  tft.setCursor(0, 0);
-//  tft.setTextSize(5);
-//  tft.setTextWrap(true);
-//  tft.fillScreen(BACKGROUND_COLOR);
-//  }
-//}
-
 void printTemperature(int temperature[][SENSORS_NUMBER], char temperatureUnit){
   tft.fillScreen(BACKGROUND_COLOR);
   for(int i=0 ; i<SENSORS_NUMBER ; i++){
@@ -173,8 +136,6 @@ void printTemperature(int temperature[][SENSORS_NUMBER], char temperatureUnit){
     tft.print(termometrsNumeration[i]);
     
     prepareText(ARROW_X_POSITION, y+10, 4);
-    //tft.print(char(0x1A));
-    //tft.fillTriangle(ARROW_X_POSITION, y+2, ARROW_X_POSITION, y+28, ARROW_X_POSITION+20, y+15, TEXT_COLOR_W);
     tft.fillTriangle(ARROW_X_POSITION, y+2, ARROW_X_POSITION, y+28, ARROW_X_POSITION+20, y+15, TEXT_COLOR_W);
 
     if(temp[3][i] == 0) {
@@ -224,7 +185,7 @@ void printTemperatureUpdate(char temperatureUnit){
       }
 
       if(temp[4][i] == 1){
-        if(temp[0][i] >= temp[2][i]){ //set sound alarm flag on if condition true
+        if(temp[0][i] >= temp[2][i]){   //set sound alarm flag on if condition true
           temp[6][i] = 1;
         } else if(temp[0][i] < (temp[2][i]-HistIntervals[global_hist])) {
           temp[6][i] = 0;
@@ -234,7 +195,7 @@ void printTemperatureUpdate(char temperatureUnit){
       }
 
       if(temp[5][i] == 1){
-        if(temp[0][i] >= temp[2][i]){//set relay alarm flag on if condition true
+        if(temp[0][i] >= temp[2][i]){   //set relay alarm flag on if condition true
           temp[7][i] = 1;
         } else if(temp[0][i] < (temp[2][i]-HistIntervals[global_hist])) {
           temp[7][i] = 0;
@@ -247,7 +208,6 @@ void printTemperatureUpdate(char temperatureUnit){
         temp[6][i] = 0;
         temp[7][i] = 0;
         tft.fillRect(ARROW_X_POSITION, y, 120, 30, BACKGROUND_COLOR);
-       // Serial.println(y);
         prepareText(ARROW_X_POSITION-5, y+22, 1, TEXT_COLOR_W, true);
         tft.print("WYLACZONY");
         temp[3][i] = 2;         
@@ -255,27 +215,22 @@ void printTemperatureUpdate(char temperatureUnit){
       continue;
     }
     
-//Serial.println(temp[1][i]);
  prepareText(ARROW_X_POSITION, y, 5);
    
     if(temp[10][i] > temp[11][i] && abs(temp[10][i] - temp[11][i]) >= 2 && temp[12][i] != 1){
       temp[12][i] = 1;
       tft.fillRect(ARROW_X_POSITION, y, 42, 40, BACKGROUND_COLOR);
       prepareText(ARROW_X_POSITION, y+5, 4, ILI9341_RED);
-     // tft.print(char(0x18));
       tft.fillTriangle(ARROW_X_POSITION+10, y+2, ARROW_X_POSITION, y+28, ARROW_X_POSITION+20, y+28, ILI9341_RED);
     }else if(temp[10][i] < temp[11][i] && abs(temp[10][i] - temp[11][i]) >= 2 && temp[12][i] != 2){
       temp[12][i] = 2;
       tft.fillRect(ARROW_X_POSITION, y, 42, 40, BACKGROUND_COLOR);
       prepareText(ARROW_X_POSITION, y+5, 4, ILI9341_GREEN);
-     // tft.print(char(0x19));
      tft.fillTriangle(ARROW_X_POSITION+10, y+28, ARROW_X_POSITION, y+2, ARROW_X_POSITION+20, y+2, ILI9341_GREEN);
     } else if(abs(temp[10][i] - temp[11][i]) < 2 && temp[12][i] != 0){
       temp[12][i] = 0;
       tft.fillRect(ARROW_X_POSITION, y, 42, 40, BACKGROUND_COLOR);
       prepareText(ARROW_X_POSITION, y+5, 4, TEXT_COLOR_W);
-     // tft.print(char(0x1A));
-
       tft.fillTriangle(ARROW_X_POSITION, y+2, ARROW_X_POSITION, y+28, ARROW_X_POSITION+20, y+15, TEXT_COLOR_W);
     }
       
@@ -287,8 +242,6 @@ void printTemperatureUpdate(char temperatureUnit){
       tft.fillRect(ARROW_X_POSITION+25, y, 20, 40, BACKGROUND_COLOR);
     }
     
-    //&& abs(temp[8][i] - temp[11][i]) > 1 
-    //Serial.println(temp[0][i]);
     if(temp[0][i] != temp[1][i]) displayTemperature(i, y);
   }
 }
@@ -346,17 +299,16 @@ void printUpdateSetAlarm(int port){
       } else if (action.y > 40 && action.y < 260 && action.x < 40 &&  action.x > 20){
         soundClic();
         Sy = action.y;
-       // Serial.println(Sy);
         tmpTempAlarm=map(Sy, 260, 40, TEMP_MIN, TEMP_MAX);
         drawTemperatureAlarm(tmpTempAlarm);
-        drawTempSlide(tmpTempAlarm, Sy);
+        drawTempSlide(Sy);
       } else if(action.y > 50 && action.y < 70 && action.x < 70 &&  action.x > 50) {
         soundClic();
         if(tmpTempAlarm < TEMP_MAX){
           tmpTempAlarm += 1;
           drawTemperatureAlarm(tmpTempAlarm);
           Sy=map(tmpTempAlarm, TEMP_MIN, TEMP_MAX, 260, 40);
-          drawTempSlide(tmpTempAlarm, Sy);                   
+          drawTempSlide(Sy);                   
         }
         delay(SHORT_CLICK_DELAY);
       } else if(action.y > 240 && action.y < 260 && action.x < 70 &&  action.x > 50) {
@@ -365,7 +317,7 @@ void printUpdateSetAlarm(int port){
           tmpTempAlarm -= 1;
           drawTemperatureAlarm(tmpTempAlarm);
           Sy=map(tmpTempAlarm, TEMP_MIN, TEMP_MAX, 260, 40);
-          drawTempSlide(tmpTempAlarm, Sy);                   
+          drawTempSlide(Sy);                   
         }
         delay(SHORT_CLICK_DELAY);        
       }
@@ -379,9 +331,10 @@ void printSetAlarm(TS_Point p){
   prepareText(5, 10, 2, TEXT_COLOR_W);  
   tft.print("USTAWIENIE ALARMU ");
   tft.println(termometrsNumeration[port]);
-  
   int Sy=map(temp[2][port], TEMP_MIN, TEMP_MAX, 260, 40);
-  drawTempSlide(temp[2][port], Sy);
+  
+  drawTempSlide(Sy);
+  
     drawTemperatureAlarm(temp[2][port]);
     prepareText(195, 55, 1, TEXT_COLOR_W, true);
     tft.print(char(DEGREE));
@@ -445,7 +398,6 @@ void printUpdateMainMenu(){
         printTemperature(temp, temperatureUnit[global_temp_unit_set]);
         break; 
       } else if (action.y > 0 && action.y < 60){
-       // soundClic();
         if((millis() - menu2Timer > FACTORY_DELAY) && menu2Access == false){
           soundClic(100);
           delay(200);
@@ -461,7 +413,6 @@ void printUpdateMainMenu(){
           tmpUnit = 0;
         }
         prepareText(40, 55, 2, ILI9341_GREEN);
-        //cleanSign(11);
         tft.fillRect(40, 55, 190, 30, ILI9341_GREEN);
         prepareText(40, 55, 2, TEXT_COLOR_B);
         tft.print("Jednostka ");
@@ -647,7 +598,6 @@ void printUpdateMainMenu2(){
         break; 
     } else if (action.y > 45 && action.y < 85) {
        _eepromReset();
-       //tft.fillRect(10, 45, 220, 40, ILI9341_YELLOW);
        printButton(10, 45, 220, 40, ILI9341_YELLOW, "Resetowanie ...", 40, 57, 2, TEXT_COLOR_B);
        for(int i=10; i<220 ;i++){
          tft.fillRect(10, 80, i, 5, ILI9341_RED);
@@ -705,7 +655,5 @@ void printMainMenu2(){
 
 void printChannelChart(int channel){
   tft.drawRect(5, 5, 230, 25, TEXT_COLOR_W);
-
   tft.drawRect(5, 35, 230, 280, TEXT_COLOR_W); //wx 230, wy 280
 }
-

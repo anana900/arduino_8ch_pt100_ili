@@ -16,7 +16,7 @@
 #define ARROW_DISPLAY_DELAY 8000
 #define FACTORY_DELAY 1000
 #define TEMP_MIN 0 //-10
-#define TEMP_MAX 440 //400
+#define TEMP_MAX 400 //400
 #define AC_RESOLUTION 1024 //750
 #define SENSORS_NUMBER 8  //number of sensors supported by device
 #define ARROW_X_POSITION 40 //main temperature panel x position of arrow
@@ -39,7 +39,6 @@
 int averageTemp[SENSORS_NUMBER] = {0};
 const char temperatureUnit[] = {'C','F','K'};   //temperature units
 const byte HistIntervals[] = {0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 18, 20, 25, 30, 40, 50, 70, 90}; //histeresis values for alarm turn off level
-//const int SDIntervals[] = {1, 3, 15};
 
 int chart[8][100];
 
@@ -55,7 +54,7 @@ int y,
     tmpBacklightStatus = 0, // used to used to control the backlight function - if 0 then skip turn off if 1 then skip turn on
     tmpBacklightFirstT = 0, // used to control the first touch on tft. if 1 wait a while then change to 0. if 0 then normal work
     tmpHist = 0;            // keep global var
-//    tmpSD = 0;              // not used
+
 boolean pressedActive = false,    //var to handle touchscreen short and long press
         longPressActive = false,
         tmpArrowChange = true,    //var to handle arrow displaying
@@ -65,7 +64,6 @@ unsigned long pressedTimer = 0;
 unsigned long arrowUpddateTimer = 0;
 unsigned long backlightTimer = 0;
 unsigned long menu2Timer = 0;
-//unsigned long sdRecordTimer = 0;
 
 uint8_t analog_ports[] = {A0, A1, A2, A3, A4, A5, A6, A7}; //array of analog input to read temperature from sensors
 const char termometrsNumeration[]={'A','B','C','D','E','F','G','H'}; //sensors description
@@ -105,10 +103,7 @@ int global_alarm_set,     //0 or 1 - relay - on/off
     global_bl_set,        //have 2 functioms: 1 - is used as a flag to set the back light on (1) off (0). 2 - is used as backlight time
     global_bl_val_set,    //is used as backlight bright control value
     global_hist;          //used to keep the histeresis alarm value: 0 - 10
-    //global_sd_set;        //keeps logger intervals minutes
 
 uint16_t BACKGROUND_COLOR;    // keeps backgroud color val
 uint16_t TEXT_COLOR_W;        // keeps font color val
 uint16_t TEXT_COLOR_B = 0x0000;
-
-

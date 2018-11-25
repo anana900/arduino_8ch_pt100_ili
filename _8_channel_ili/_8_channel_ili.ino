@@ -7,49 +7,32 @@
 #include <SPI.h>
 #include "variables.h"
 #include "tftlcd24.h"
-//#include "SDLogger.h"
-//#include "ds1307.h"
 
 void setup(void){
-  Serial.begin(9600);
-  tft.begin();
-  if (!ts.begin()) {
-    Serial.println("Couldn't start touchscreen controller");
-    while (1);
-  }
-
+  //Serial.begin(9600);
   pinMode(SOUND, OUTPUT);
   pinMode(RELAY, OUTPUT);
   pinMode(LCD_LIGHT, OUTPUT);
   digitalWrite(SOUND, 0); //zmienilem na 1 z 0
   digitalWrite(RELAY, 0);
   analogWrite(LCD_LIGHT, 255);
+  
+  tft.begin();
+  if (!ts.begin()) {
+    digitalWrite(SOUND, 1);
+    delay(5000);
+    digitalWrite(SOUND, 0);
+  }
 
-//  SDInitialization();
-
-//  if (! rtc.begin()) {
-//    Serial.println("Couldn't find RTC");
-//    while (1);
-//  }
-
-//  if (! rtc.isrunning()) {
-//    Serial.println("RTC is NOT running!");
-//    // following line sets the RTC to the date & time this sketch was compiled
-//    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-//    // This line sets the RTC with an explicit date & time, for example to set
-//    // January 21, 2014 at 3am you would call:
-//    // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
-//  }
-
-//  _eepromReset();
+ // _eepromReset();
   _eepromReadConfig();
   setColorMode();
-//  printHello(20000);
   printTemperature(temp, temperatureUnit[global_temp_unit_set]);
 }
 
 void loop(){
   if (ts.touched()) {
+    delay(20);
     backlightTimer = millis();
 
     if(pressedActive == false){
@@ -83,15 +66,5 @@ void loop(){
   backLight();
   calculateTemperature();
   printTemperatureUpdate(temperatureUnit[global_temp_unit_set]);
-  relayAndSoundAlarmsControl();
-
-//  if((millis() - sdRecordTimer > 5000)){
-//      //printTime();
-////      SDInitialization();
-//   // test();
-//     printsd();
-//    sdRecordTimer = millis();
-//  }
-  
+  relayAndSoundAlarmsControl();  
 }
-

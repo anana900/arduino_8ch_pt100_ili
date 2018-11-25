@@ -59,18 +59,11 @@ int convertTempUnit(int tempCelsius){
 
 void calculateTemperature(){
    for(int port =0 ; port < SENSORS_NUMBER ; port++){
-    //Read actual temperature from analog ports
-       // temp[0][port] = analogRead(analog_ports[port]);
         temp[9][port] = temp[8][port];
-        //temp[8][port] = map(analogRead(analog_ports[port]) - 50 + temp[13][port], 0, AC_RESOLUTION, TEMP_MIN, TEMP_MAX); //+ temp[13][port]
         temp[8][port] = map(analogRead(analog_ports[port]), 0, AC_RESOLUTION, TEMP_MIN, TEMP_MAX - 50 + temp[13][port]); //+ temp[13][port]
         temp[1][port] = temp[0][port];
         temp[0][port] = (temp[8][port] + temp[9][port])/2; 
-
-        Serial.println(analogRead(analog_ports[port]));
   }
-   Serial.println("--------------------------------");   
-    //Calculate the average history temperature, and determine the trend
     if(millis() - arrowUpddateTimer > ARROW_DISPLAY_DELAY){
       for(int port =0 ; port < SENSORS_NUMBER ; port++){   
         temp[11][port] = temp[10][port];
@@ -79,4 +72,3 @@ void calculateTemperature(){
       arrowUpddateTimer = millis();
     }
 }
-
